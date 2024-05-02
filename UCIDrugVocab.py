@@ -1,8 +1,13 @@
 import pandas as pd
-import pickle
+import pickle\
+
+import nltk
+from nltk.corpus import stopwords
 
 corpusPath = 'UCIDrugClean.csv'
 exportPath = 'UCIDrugVocab.pickle'
+
+stop = stopwords.words('english')
 
 def CreateVocab(export = True) :
 
@@ -13,7 +18,8 @@ def CreateVocab(export = True) :
 
     for values in dataset.itertuples() :
         for word in values.Review.split() :
-            vocab.add(word)
+            if word not in stop :
+                vocab.add(word)
 
     print(len(vocab))
 

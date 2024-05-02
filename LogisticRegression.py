@@ -1,5 +1,8 @@
 import math
 import numpy as np
+import pandas as pd
+import scipy
+import scipy.sparse
 from utils import *
 
 class logistic() :
@@ -50,8 +53,7 @@ class logistic() :
     def feedforward(self, x) :
         '''if not isinstance(x, np.array) :
             x = np.array(x)'''
-        
-        values = np.dot(x, self.weights) + self.bias
+        values = np.array([(entries * self.weights).sum() + self.bias for entries in x]) #np.dot(x, self.weights) + self.bias
         return self.sigmoid(values)
     
         ''' values = []
@@ -72,7 +74,7 @@ class logistic() :
         #gradient descent
 
     def fit(self, values, actual) :
-
+        print("Fitting values...")
         '''if not isinstance(values, np.ndarray) :
             values = np.array(values)
         
@@ -81,21 +83,32 @@ class logistic() :
 
         #get dimensions of our input vector
         #it will be multidimensional
-        samples = len(values) #samples is the number of training documents
-        vectorsize = len(values[0]) #vectorsize is how big our actual input vector is for classification
+        samples, vectorsize = values.shape #len(values) #samples is the number of training documents
+                                                        #vectorsize is how big our actual input vector is for classification
+
+        print(f"Samples {samples} Vectorsize {vectorsize}")
 
         #initialize our weights. multiplying vector gets us full 0 vector
-        self.weights = np.zeros(vectorsize)
+        self.weights = np.zeros(vectorsize)[0]
         #self.weights = [0] * vectorsize
         self.bias = 0
 
+        valuesT = values.transpose()
+
+        
+        valuesT = [scipy.sparse.coo_array(arr) for arr in valuesT]
+        
+
+        print("Into actual training...")
         #now we need to loop for iterations
         for _ in range(self.iterations) :
             
             #get the predicted values
+            print("Feed forward")
             A = self.feedforward(values)
 
             #get how off we are for each prediction
+            print("Getting weight change")
             weightchange = A - actual
             #weightchange = [a-y for (a, y) in zip(A, actual)]
 
@@ -117,7 +130,9 @@ class logistic() :
                     
                     #sum += weightchange[i]*values[i][weightindex]
                     #count += 1
-            sum = np.dot(values.T, weightchange)    
+            
+            print("Gradient descent")
+            sum = np.array([value @ weightchange for value in valuesT]) #np.dot(valuesT, weightchange)    
             self.weights -= ((sum*self.learningRate)/samples)
             #self.weights[weightindex] -= (self.learningRate*sum)/samples
 
@@ -130,6 +145,10 @@ class logistic() :
     def predict(self, X) :
             '''if not isinstance(X, np.ndarray) :
                 X = np.array(X)'''
+
+            result = self.sigmoid(np.array([(entries * self.weights).sum() + self.bias for entries in X]))
+            return [1 if i >self.threshold else 0 for i in result]
+
 
             result = self.sigmoid(np.dot(X, self.weights)+self.bias)
             return [1 if i > self.threshold else 0 for i in result]
