@@ -15,9 +15,12 @@ class logistic() :
     #sigmoid takes in an array of values and puts out an array of sigmoided values
     #sigmoid mathematical function = 1/(1+e^-x)
     def sigmoid(self, x) :
-        return [1/(1+(math.e**-num)) for num in x]
+        '''if not isinstance(x, np.ndarray) :
+            x = np.array(x)'''
+        return 1/(1+math.e**-x)
+        #return [1/(1+(math.e**-num)) for num in x]
     
-    #take in an array of predicted and actual values and calculate the loss of our predictions
+    #take in an array of predicted and actual values and calculate the loss of our predictions (we dont actually use this anywhere)
     def computeLoss(self, pred, actual) :
 
         #total and sum to calculate mean
@@ -45,14 +48,20 @@ class logistic() :
     #given a vector of vectors we have, just multiply it by the weights and add the bias
     #then put it through sigmoid and return that 
     def feedforward(self, x) :
-        values = []
+        '''if not isinstance(x, np.array) :
+            x = np.array(x)'''
+        
+        values = np.dot(x, self.weights) + self.bias
+        return self.sigmoid(values)
+    
+        ''' values = []
         for vector in x :
             value = 0
             for i in range(len(vector)) :
                 value += vector[i] * self.weights[i]
             value += self.bias
             values.append(value)
-        return self.sigmoid(values)
+        return self.sigmoid(values)'''
     
     #fit
     #get the number of entries and size of input vector
@@ -61,7 +70,14 @@ class logistic() :
         #they are doing matrix multiplaction (in feed forward) to get array of outputs
         #   we could just loop? maybe worse but I get it better
         #gradient descent
+
     def fit(self, values, actual) :
+
+        '''if not isinstance(values, np.ndarray) :
+            values = np.array(values)
+        
+        if not isinstance(actual, np.ndarray) :
+            actual = np.array(actual)'''
 
         #get dimensions of our input vector
         #it will be multidimensional
@@ -69,7 +85,8 @@ class logistic() :
         vectorsize = len(values[0]) #vectorsize is how big our actual input vector is for classification
 
         #initialize our weights. multiplying vector gets us full 0 vector
-        self.weights = [0] * vectorsize
+        self.weights = np.zeros(vectorsize)
+        #self.weights = [0] * vectorsize
         self.bias = 0
 
         #now we need to loop for iterations
@@ -79,12 +96,13 @@ class logistic() :
             A = self.feedforward(values)
 
             #get how off we are for each prediction
-            weightchange = [a-y for (a, y) in zip(A, actual)]
+            weightchange = A - actual
+            #weightchange = [a-y for (a, y) in zip(A, actual)]
 
             #loop through our weights to update them
-            for weightindex in range(len(self.weights)) :
-                sum = 0
-                count = 0 
+            #for weightindex in range(len(self.weights)) :
+                #sum = 0
+                #count = 0 
 
                 #for each weight, we must look at each correspending input value
                 #so for weight theta2 we have 
@@ -92,20 +110,31 @@ class logistic() :
                 #     [x1, x2, x3]
                 #     [x1, x2, x3]]
                 #we need to look at every x2 value to update our weight at index 2
-                for i in range(len(weightchange)) :
-                    sum += weightchange[i]*values[i][weightindex]
-                    count += 1
+
                 
-                self.weights[weightindex] -= (self.learningRate*sum)/count
-            db = 0
-            for i in range(len(weightchange)) :
-                db += weightchange[i]
-            biaschange = self.learningRate * db * (1/count)
-            self.bias -= biaschange
+
+                #for i in range(len(weightchange)) :
+                    
+                    #sum += weightchange[i]*values[i][weightindex]
+                    #count += 1
+            sum = np.dot(values.T, weightchange)    
+            self.weights -= ((sum*self.learningRate)/samples)
+            #self.weights[weightindex] -= (self.learningRate*sum)/samples
+
+            db = np.sum(weightchange)
+            #for i in range(len(weightchange)) :
+            #    db += weightchange[i]
+            self.bias -= self.learningRate * db * (1/samples)
 
 
     def predict(self, X) :
-            result = []
+            '''if not isinstance(X, np.ndarray) :
+                X = np.array(X)'''
+
+            result = self.sigmoid(np.dot(X, self.weights)+self.bias)
+            return [1 if i > self.threshold else 0 for i in result]
+
+            '''result = []
             for vector in X :
                 output = 0
                 for i in range(len(vector)) :
@@ -113,7 +142,7 @@ class logistic() :
                 output += self.bias
                 result.append(output)
             result = self.sigmoid(result)
-            return [1 if i > self.threshold else 0 for i in result]
+            return [1 if i > self.threshold else 0 for i in result]'''
 
 
 
