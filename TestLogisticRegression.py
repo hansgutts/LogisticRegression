@@ -1,9 +1,12 @@
 import scipy.sparse
+import scipy.sparse
 from sklearn.model_selection import train_test_split
 from sklearn import datasets
 from utils import *
 import numpy as np
 import LogisticRegression
+import math
+import scipy
 import math
 import scipy
 
@@ -104,6 +107,7 @@ predictions = regressor.predict(X_test)
 #print(y_train)
 cm ,accuracy,sens,precision,f_score  = confusion_matrix(np.asarray(y_test), np.asarray(predictions))
 print("Test accuracy: {0:.3f}".format(accuracy))
+print("Confusion Matrix:", np.array(cm))
 print("Confusion Matrix:", np.array(cm))
 
 
