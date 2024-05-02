@@ -1,5 +1,7 @@
 import math
 import numpy as np
+import scipy
+import scipy.sparse
 from utils import *
 
 class logistic() :
@@ -51,7 +53,7 @@ class logistic() :
         '''if not isinstance(x, np.array) :
             x = np.array(x)'''
         
-        values = np.dot(x, self.weights) + self.bias
+        values = [(entries @ self.weights) + self.bias for entries in x] #np.dot(x, self.weights) + self.bias
         return self.sigmoid(values)
     
         ''' values = []
@@ -81,8 +83,10 @@ class logistic() :
 
         #get dimensions of our input vector
         #it will be multidimensional
-        samples = len(values) #samples is the number of training documents
-        vectorsize = len(values[0]) #vectorsize is how big our actual input vector is for classification
+        samples = len(values) #len(values) #samples is the number of training documents
+        vectorsize = values[0].shape #vectorsize is how big our actual input vector is for classification
+
+        print(f"Samples {samples} Vectorsize {vectorsize}")
 
         #initialize our weights. multiplying vector gets us full 0 vector
         self.weights = np.zeros(vectorsize)
