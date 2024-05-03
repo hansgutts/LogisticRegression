@@ -102,13 +102,10 @@ class logistic() :
         print("Into actual training...")
         #now we need to loop for iterations
         for _ in range(self.iterations) :
-            
             #get the predicted values
-            print("Feed forward")
             A = self.feedforward(values)
 
             #get how off we are for each prediction
-            print("Getting weight change")
             weightchange = A - actual
             #weightchange = [a-y for (a, y) in zip(A, actual)]
 
@@ -130,8 +127,7 @@ class logistic() :
                     
                     #sum += weightchange[i]*values[i][weightindex]
                     #count += 1
-            
-            print("Gradient descent")
+
             sum = np.array([value @ weightchange for value in valuesT]) #np.dot(valuesT, weightchange)    
             self.weights -= ((sum*self.learningRate)/samples)
             #self.weights[weightindex] -= (self.learningRate*sum)/samples
@@ -147,7 +143,7 @@ class logistic() :
                 X = np.array(X)'''
 
             result = self.sigmoid(np.array([(entries * self.weights).sum() + self.bias for entries in X]))
-            return [1 if i >self.threshold else 0 for i in result]
+            return [1 if i > self.threshold else 0 for i in result]
 
 
             result = self.sigmoid(np.dot(X, self.weights)+self.bias)

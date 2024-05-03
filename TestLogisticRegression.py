@@ -1,18 +1,14 @@
 import scipy.sparse
-import scipy.sparse
 from sklearn.model_selection import train_test_split
 from sklearn import datasets
 from utils import *
 import numpy as np
 import LogisticRegression
-import math
 import scipy
-import math
-import scipy
-
 import pandas as pd
 import pickle
 
+#function to make confusion matrix
 def confusion_matrix(y_actual, y_predicted):
     tp = 0
     tn = 0
@@ -38,18 +34,19 @@ def confusion_matrix(y_actual, y_predicted):
     f_score = (2*prec*sens)/(prec+sens+epsilon)
     return cm,accuracy,sens,prec,f_score
 
+#beginning logistic regression
 print("Working...")
 
+#read in the dataset as a dataframe
 print('Opening dataset')
 dataset = pd.read_csv("UCIDrugClean.csv")
-dataset = dataset[:20000]
 
-#train, test = train_test_split(dataset, test_size=0.2)
-
+#open our pickled vocabulary
 with open("UCIDrugVocab.pickle", 'rb') as picklefile :
     vocab = pickle.load(picklefile)
 
-
+#create our vocab location dictionary
+#need this to create consistent bag of word vectors
 print("Creating vocab information")
 x = 0
 vocabLocationDictionary = {}
@@ -60,34 +57,38 @@ for word in vocab:
 
 
 print("Creating bow vectors")
-X = []
 
+#create bag of words for each review
+#since we are making sparse matrix we need to collect the value and the value's corresponding row and col
+#the row is our i as it incrememnts every new vector
+#the col is the location of the word in the bag of word vector as defined above
+#the data is just a 1 for now (occurence seems more important than count)
+i=0
+data = []
+row = []
+col = []
 for entries in dataset.itertuples() :
     review = entries.review
-    newx = [0] * vocabSize
-
     for word in review.split() :
         if word in vocabLocationDictionary :
-            newx[vocabLocationDictionary[word]] = 1
+            data.append(1)
+            row.append(i)
+            col.append(vocabLocationDictionary[word])
 
-    X.append(newx)
-    #X.append(scipy.sparse.coo_array(newx))
-
-#dataset['X'] = pd.Series(X)
-X = scipy.sparse.csr_matrix(X)
+    i += 1
+    
+#finally, convert the reviews into our bag of words matrix
+X = scipy.sparse.csr_matrix((data, (row, col)), shape = (len(dataset), vocabSize))
 y = list(dataset['rating'])
 
+#split into training and testing data
 X_train = X[:round(X.shape[0]*.8)]
 y_train = y[:round(len(y)*.8)]
 X_test = X[round(X.shape[0]*.8):]
 y_test = y[round(len(y)*.8):]
 
-#print(f"X train {len(X_train)} X test {len(X_test)} y test {len(y_test)}")
-
-
-
-
-'''dataset = datasets.load_breast_cancer()
+'''#testing dataset, I know the expected result
+dataset = datasets.load_breast_cancer()
 X, y = dataset.data, dataset.target
 
 X, y = dataset.data, dataset.target 
@@ -95,20 +96,29 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=1234
 )'''
 
-print("Training logistic regression...")
-regressor = LogisticRegression.logistic(learningRate=1, iterations=1)
-regressor.fit(X_train, y_train)
-print(regressor.weights)
-print(regressor.bias)
+#try to find the right learning rate and number of iterations
+acc = []
+for x in range(5, 1000, 5) :
+    for y in range(1, 1000, 5) :
+        #train the logistic regression
+        print("Training logistic regression...")
+        regressor = LogisticRegression.logistic(learningRate=y/1000, iterations=x)
+        regressor.fit(X_train, y_train)
 
-print("Testing logistic regression")
-predictions = regressor.predict(X_test)
-#print(predictions)
-#print(y_train)
-cm ,accuracy,sens,precision,f_score  = confusion_matrix(np.asarray(y_test), np.asarray(predictions))
-print("Test accuracy: {0:.3f}".format(accuracy))
-print("Confusion Matrix:", np.array(cm))
-print("Confusion Matrix:", np.array(cm))
+        #test the logistic regression
+        print("Testing logistic regression")
+        predictions = regressor.predict(X_test)
+
+        #evaluate the logistic regression
+        cm ,accuracy,sens,precision,f_score  = confusion_matrix(np.asarray(y_test), np.asarray(predictions))
+        acc.append([x, y, accuracy])
+        print("Test accuracy: {0:.3f}".format(accuracy))
+        print("Confusion Matrix:", np.array(cm))
+
+#sort our accuracies in descending order and display them
+acc.sort(key=lambda x: x[2])
+print(acc)
+
 
 
 '''print(np.dot([[1, 1, 2, 1], [2, 2, 2, 2]], [2, 2, 2, 2]))
