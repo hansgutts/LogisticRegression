@@ -40,6 +40,7 @@ print("Working...")
 #read in the dataset as a dataframe
 print('Opening dataset')
 dataset = pd.read_csv("UCIDrugClean.csv")
+#dataset = dataset[:30000]
 
 #open our pickled vocabulary
 with open("UCIDrugVocab.pickle", 'rb') as picklefile :
@@ -98,26 +99,26 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 #try to find the right learning rate and number of iterations
 acc = []
-for x in range(5, 1000, 5) :
-    for y in range(1, 1000, 5) :
+#for x in range(5, 1000, 5) :
+#    for y in range(1, 1000, 5) :
         #train the logistic regression
-        print("Training logistic regression...")
-        regressor = LogisticRegression.logistic(learningRate=y/1000, iterations=x)
-        regressor.fit(X_train, y_train)
+print("Training logistic regression...")
+regressor = LogisticRegression.logistic(learningRate=1.25, iterations=1000)
+regressor.fit(X_train, y_train)
 
-        #test the logistic regression
-        print("Testing logistic regression")
-        predictions = regressor.predict(X_test)
+#test the logistic regression
+print("Testing logistic regression")
+predictions = regressor.predict(X_test)
 
-        #evaluate the logistic regression
-        cm ,accuracy,sens,precision,f_score  = confusion_matrix(np.asarray(y_test), np.asarray(predictions))
-        acc.append([x, y, accuracy])
-        print("Test accuracy: {0:.3f}".format(accuracy))
-        print("Confusion Matrix:", np.array(cm))
+#evaluate the logistic regression
+cm ,accuracy,sens,precision,f_score  = confusion_matrix(np.asarray(y_test), np.asarray(predictions))
+#acc.append([x, y, accuracy])
+print("Test accuracy: {0:.3f}".format(accuracy))
+print("Confusion Matrix:\n", np.array(cm))
 
 #sort our accuracies in descending order and display them
-acc.sort(key=lambda x: x[2])
-print(acc)
+#acc.sort(key=lambda x: x[2])
+#print(acc)
 
 
 

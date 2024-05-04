@@ -24,7 +24,7 @@ class logistic() :
         #return [1/(1+(math.e**-num)) for num in x]
     
     #take in an array of predicted and actual values and calculate the loss of our predictions (we dont actually use this anywhere)
-    def computeLoss(self, pred, actual) :
+    def computeloss(self, pred, actual) :
 
         #total and sum to calculate mean
         total = 0
@@ -53,7 +53,7 @@ class logistic() :
     def feedforward(self, x) :
         '''if not isinstance(x, np.array) :
             x = np.array(x)'''
-        values = np.array([(entries * self.weights).sum() + self.bias for entries in x]) #np.dot(x, self.weights) + self.bias
+        values = (x @ self.weights) + self.bias #np.array([(entries * self.weights).sum() + self.bias for entries in x]) #np.dot(x, self.weights) + self.bias
         return self.sigmoid(values)
     
         ''' values = []
@@ -89,15 +89,14 @@ class logistic() :
         print(f"Samples {samples} Vectorsize {vectorsize}")
 
         #initialize our weights. multiplying vector gets us full 0 vector
-        self.weights = np.zeros(vectorsize)[0]
+        self.weights = np.zeros(vectorsize)
         #self.weights = [0] * vectorsize
         self.bias = 0
 
         valuesT = values.transpose()
 
         
-        valuesT = [scipy.sparse.coo_array(arr) for arr in valuesT]
-        
+        #valuesT = scipy.sparse.csr_matrix(valuesT) #[scipy.sparse.coo_array(arr) for arr in valuesT]
 
         print("Into actual training...")
         #now we need to loop for iterations
@@ -127,8 +126,8 @@ class logistic() :
                     
                     #sum += weightchange[i]*values[i][weightindex]
                     #count += 1
-
-            sum = np.array([value @ weightchange for value in valuesT]) #np.dot(valuesT, weightchange)    
+            sum = (valuesT @ weightchange) + self.bias#np.dot(valuesT, weightchange) + self.bias #[(value @ weightchange)[0] + self.bias for value in valuesT] #np.dot(valuesT, weightchange)    
+            
             self.weights -= ((sum*self.learningRate)/samples)
             #self.weights[weightindex] -= (self.learningRate*sum)/samples
 
@@ -142,13 +141,9 @@ class logistic() :
             '''if not isinstance(X, np.ndarray) :
                 X = np.array(X)'''
 
-            result = self.sigmoid(np.array([(entries * self.weights).sum() + self.bias for entries in X]))
+            result = self.sigmoid((X @ self.weights) + self.bias)#np.array([(entries * self.weights).sum() + self.bias for entries in X]))
             return [1 if i > self.threshold else 0 for i in result]
-
-
-            result = self.sigmoid(np.dot(X, self.weights)+self.bias)
-            return [1 if i > self.threshold else 0 for i in result]
-
+    
             '''result = []
             for vector in X :
                 output = 0
