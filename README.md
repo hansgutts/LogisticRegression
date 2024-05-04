@@ -39,6 +39,25 @@ bias are updated within the class.
 <h3>predict(numpy.array X) -> numpy.array</h3>
 Predict takes in a list of feature vectors and returns a list of predicted classifications (1 or 0). 
 
+<h2>Adding NumPy Support</h2>
+After successfully implementing logistic regression using only built in Python datatypes, efficiency problems were apparent. Even working with
+a relatively small dataset such as sklearn's breast cancer dataset (https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html)
+which only has 30 dimensions and 569 samples run time was noticable. Since I intended to do baseline work on a dataset with upwards of 43,000 
+samples and a feature vector of 37,000 entries this implementation would not be viable. This lead me to change the implementation to take advantage 
+of NumPy's efficient row wise operations and vector calculations to drastically improve efficiency (efficiency changes will be calculated later).
+
+<h3>Adding SciPy Sparse Matrix Support</h3>
+After adding NumPy ndarray support I attempted to work with the dataset discussed below which has 43,000 samples and 37,000 entries but I ran
+into memory issues. The numpy arrays were attempting to use upwards of 10 gigabytes of memory which VSCode would not allow. I intend to move away
+from the pure bag of words approach and thus shrink my feature vector but without being able to do baseline work on the dataset I needed to find a
+way to have it run with the absurd vectors. This led me to sparse matrices and, eventually, I found SciPy which has sparse arrays/matrices built on 
+top of NumPy's ndarrays meaning I could get this to work on NumPy arrays which the average person would need but still have support for those who 
+may require large sparse datasets (like me). Implementing SciPy introduced some challenges as even though it was built on ndarrays it didn't work
+nicely with NumPy.dot() which means I had to change to using the @ operator which did the same thing but actually worked on sparse arrays. This took
+some time to figure out as NumPy.dot() would run with the sparse vector but the shape of the matrix returned wasn't correct. Making this adjustment 
+went from VSCode crashing or using 95% of my PC's memory to running using less than 20% of my PC's memory. I intend to calculate actual metrics
+in the future.
+
 <h2>Dataset</h2>
 The dataset I used is the UCI_Drug (https://www.kaggle.com/datasets/arpikr/uci-drug/data) dataset found on Kaggle. In short, 
 it has reviews of drugs that treat varying medicial conditions. The dataset includes uniqueID, drugName, condition, review, 
