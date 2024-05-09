@@ -8,4 +8,4 @@ __pycache__/
 UCIdrug.csv
 
 #no reason to track pickled files, they will be generated locally
-.pickle
+*.pickle
