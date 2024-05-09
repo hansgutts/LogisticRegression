@@ -1,0 +1,8 @@
+#ignore the pyc files
+*.pyc
+
+#ignore pycache
+__pycache__/
+
+#combined raw csv file is too large for github
+UCIdrug.csv
