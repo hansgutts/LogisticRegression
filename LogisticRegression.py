@@ -23,6 +23,7 @@ class logistic() :
     
     #take in an array of predicted and actual values and calculate the loss of our predictions (we dont actually use this anywhere)
     def computeloss(self, pred, actual) :
+    def computeloss(self, pred, actual) :
 
         #total and sum to calculate mean
         total = 0

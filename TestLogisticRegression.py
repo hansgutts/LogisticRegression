@@ -45,6 +45,7 @@ print("Working...")
 #read in the dataset as a dataframe
 print('Opening dataset')
 dataset = pd.read_csv("UCIDrugClean.csv")
+#dataset = dataset[:30000]
 
 #open our pickled vocabulary
 with open(pickleVocabpath, 'rb') as picklefile :
@@ -127,7 +128,15 @@ regressor.fit(X_train, y_train)
 #test the logistic regression
 print("Testing logistic regression")
 predictions = regressor.predict(X_test)
+#test the logistic regression
+print("Testing logistic regression")
+predictions = regressor.predict(X_test)
 
+#evaluate the logistic regression
+cm ,accuracy,sens,precision,f_score  = confusion_matrix(np.asarray(y_test), np.asarray(predictions))
+#acc.append([x, y, accuracy])
+print("Test accuracy: {0:.3f}".format(accuracy))
+print("Confusion Matrix:\n", np.array(cm))
 #evaluate the logistic regression
 cm ,accuracy,sens,precision,f_score  = confusion_matrix(np.asarray(y_test), np.asarray(predictions))
 #acc.append([x, y, accuracy])
