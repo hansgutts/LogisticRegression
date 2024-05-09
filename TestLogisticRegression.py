@@ -8,7 +8,12 @@ import scipy
 import pandas as pd
 import pickle
 
-#function to make confusion matrix
+#paths to save pickle files to save on data processing time 
+pickleXpath = "XValues.pickle"
+pickleYpath = "YValues.pickle"
+pickleVocabpath = "UCIDrugVocab.pickle"
+
+#function to make confusion matrix 
 def confusion_matrix(y_actual, y_predicted):
     tp = 0
     tn = 0
@@ -42,7 +47,7 @@ print('Opening dataset')
 dataset = pd.read_csv("UCIDrugClean.csv")
 
 #open our pickled vocabulary
-with open("UCIDrugVocab.pickle", 'rb') as picklefile :
+with open(pickleVocabpath, 'rb') as picklefile :
     vocab = pickle.load(picklefile)
 
 #create our vocab location dictionary
@@ -81,13 +86,27 @@ for entries in dataset.itertuples() :
 X = scipy.sparse.csr_matrix((data, (row, col)), shape = (len(dataset), vocabSize))
 y = list(dataset['rating'])
 
+'''#pickle the bow and class vectors to save on processing time
+with open(pickleXpath, 'wb') as pickleFile : #pickle logic/info from https://stackoverflow.com/questions/11218477/how-can-i-use-pickle-to-save-a-dict-or-any-other-python-object
+    pickle.dump(X, pickleFile, pickle.HIGHEST_PROTOCOL)
+
+with open(pickleYpath, 'wb') as pickleFile : 
+    pickle.dump(y, pickleFile, pickle.HIGHEST_PROTOCOL)'''
+
+#open pickled files
+with open(pickleXpath, 'rb') as picklefile :
+    X = pickle.load(picklefile)
+
+with open(pickleYpath, 'rb') as picklefile :
+    y = pickle.load(picklefile)
+
 #split into training and testing data
 X_train = X[:round(X.shape[0]*.8)]
 y_train = y[:round(len(y)*.8)]
 X_test = X[round(X.shape[0]*.8):]
 y_test = y[round(len(y)*.8):]
 
-'''#testing dataset, I know the expected result
+'''#snipping for testing logistic regression, I know the expected result
 dataset = datasets.load_breast_cancer()
 X, y = dataset.data, dataset.target
 
@@ -98,30 +117,23 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 #try to find the right learning rate and number of iterations
 acc = []
-for x in range(5, 1000, 5) :
-    for y in range(1, 1000, 5) :
+#for x in range(5, 1000, 5) :
+#    for y in range(1, 1000, 5) :
         #train the logistic regression
-        print("Training logistic regression...")
-        regressor = LogisticRegression.logistic(learningRate=y/1000, iterations=x)
-        regressor.fit(X_train, y_train)
+print("Training logistic regression...")
+regressor = LogisticRegression.logistic(learningRate=1, iterations=100)
+regressor.fit(X_train, y_train)
 
-        #test the logistic regression
-        print("Testing logistic regression")
-        predictions = regressor.predict(X_test)
+#test the logistic regression
+print("Testing logistic regression")
+predictions = regressor.predict(X_test)
 
-        #evaluate the logistic regression
-        cm ,accuracy,sens,precision,f_score  = confusion_matrix(np.asarray(y_test), np.asarray(predictions))
-        acc.append([x, y, accuracy])
-        print("Test accuracy: {0:.3f}".format(accuracy))
-        print("Confusion Matrix:", np.array(cm))
+#evaluate the logistic regression
+cm ,accuracy,sens,precision,f_score  = confusion_matrix(np.asarray(y_test), np.asarray(predictions))
+#acc.append([x, y, accuracy])
+print("Test accuracy: {0:.3f}".format(accuracy))
+print("Confusion Matrix:\n", np.array(cm))
 
 #sort our accuracies in descending order and display them
-acc.sort(key=lambda x: x[2])
-print(acc)
-
-
-
-'''print(np.dot([[1, 1, 2, 1], [2, 2, 2, 2]], [2, 2, 2, 2]))
-x=np.ndarray([1, 2, 3, 4])
-
-print(1 / (1 + np.exp(-x)))'''
+#acc.sort(key=lambda x: x[2])
+#print(acc)
