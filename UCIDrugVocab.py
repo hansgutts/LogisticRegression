@@ -1,5 +1,5 @@
 import pandas as pd
-import pickle\
+import pickle
 
 import nltk
 from nltk.corpus import stopwords
@@ -8,6 +8,7 @@ corpusPath = 'UCIDrugClean.csv'
 exportPath = 'UCIDrugVocab.pickle'
 
 stop = stopwords.words('english')
+stop = list(map(str.lower, stop))
 
 def CreateVocab(export = True) :
 

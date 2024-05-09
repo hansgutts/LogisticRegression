@@ -29,12 +29,14 @@ for punct in uniquePunctuation :
 print(replacementDict)
 
 #remove unnecessary data columns and null values
+print(len(dataset))
 dataset = dataset.drop(columns=['uniqueID', 'drugName', 'condition', 'date',
                                  'usefulCount']).dropna() #rating and review remain
+print(len(dataset))
 
 
 #want to transform ratings to 1 for positive 0 for negative
-dataset['rating'] = dataset['rating'].transform(lambda x: 1 if x > 7 else 0)
+dataset['rating'] = dataset['rating'].transform(lambda x: 1 if int(x) > 8 else 0)
 
 #want to modfy our reviews to translate html tags to punct, lowercase, and remove punctuation.
 dataset['review'] = dataset['review'].astype(str).transform(lambda x: html.unescape(x).lower().translate(str.maketrans(replacementDict)))
