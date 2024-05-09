@@ -47,11 +47,10 @@ samples and a feature vector of 61,000 entries this implementation would not be 
 of NumPy's efficient row wise operations and vector calculations to drastically improve efficiency (efficiency changes will be calculated later).
 
 <h2>Adding SciPy Sparse Matrix Support</h2>
-After adding NumPy ndarray support I attempted to work with the dataset discussed below which has 215,000 samples and 67,000 dimensions but I ran
-into memory issues. The numpy arrays were attempting to use upwards of 10 gigabytes of memory which VSCode would not allow. I intend to move away
-from the pure bag of words approach and thus shrink my feature vector but without being able to do baseline work on the dataset I needed to find a
-way to have it run with the absurd vectors. This led me to sparse matrices and, eventually, I found SciPy which has sparse arrays/matrices built on 
-top of NumPy's ndarrays meaning I could get this to work on NumPy arrays. This allows my logistic regression to work on NumPy ndarrays which the 
+After adding NumPy ndarray support I attempted to work with the dataset discussed below which has 215,000 samples and 61,000 dimensions but I ran
+into memory issues. The numpy arrays were attempting to use 10 gigabytes of memory which VSCode would not allow. I intend to move away
+from the pure bag of words approach and thus shrink my feature vector but without being able to do basic testing on the dataset I needed to find a
+way to have it run with the absurd vectors. To do this I used the SciPy.sparse library. This allows my logistic regression to work on NumPy ndarrays which the 
 average person would need but still have support for those who may require large sparse datasets (like me). Implementing SciPy introduced some 
 challenges as even though it was built on ndarrays it didn't work nicely with NumPy.dot() which means I had to change to using the @ operator which
 did the same thing but actually worked on sparse arrays. This took some time to figure out as NumPy.dot() would run with the sparse vector but the 
