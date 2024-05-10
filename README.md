@@ -44,7 +44,7 @@ After successfully implementing logistic regression using only built in Python d
 a relatively small dataset such as sklearn's breast cancer dataset (https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html)
 which only has 30 dimensions and 569 samples run time was noticable. Since I intended to do baseline work on a dataset with upwards of 215,000 
 samples and a feature vector of 61,000 entries this implementation would not be viable. This lead me to change the implementation to take advantage 
-of NumPy's efficient row wise operations and vector calculations to drastically improve efficiency (efficiency changes will be calculated later).
+of NumPy's efficient row wise operations and vector calculations to drastically improve efficiency.
 
 <h2>Adding SciPy Sparse Matrix Support</h2>
 After adding NumPy ndarray support I attempted to work with the dataset discussed below which has 215,000 samples and 61,000 dimensions but I ran
@@ -55,7 +55,13 @@ average person would need but still have support for those who may require large
 challenges as even though it was built on ndarrays it didn't work nicely with NumPy.dot() which means I had to change to using the @ operator which
 did the same thing but actually worked on sparse arrays. This took some time to figure out as NumPy.dot() would run with the sparse vector but the 
 shape of the matrix returned wasn't correct. Making this adjustment went from VSCode crashing or using 95% of my PC's memory to running using less 
-than 20% of my PC's memory. I intend to calculate actual metrics in the future.
+than 20% of my PC's memory.
+
+<h2>Metrics</h2>
+After adding support for NumPy arrays and SciPy support I used Python's time.process_time() and sklearn's built in breast cancer data set 
+(https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) to calculate how the changes affected efficiency while
+fitting the model. Going from only built in Python lists to NumPy ndarrays the run time for fit went from an average of 13 seconds to an average of
+.09 seconds. This comes to .00692% of its initial run time. 
 
 <h2>Dataset</h2>
 The dataset I used is the UCI_Drug (https://www.kaggle.com/datasets/arpikr/uci-drug/data) dataset found on Kaggle. In short, 
