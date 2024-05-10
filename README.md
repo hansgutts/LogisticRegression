@@ -61,7 +61,13 @@ than 20% of my PC's memory.
 After adding support for NumPy arrays and SciPy support I used Python's time.process_time() and sklearn's built in breast cancer data set 
 (https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) to calculate how the changes affected efficiency while
 fitting the model. Going from only built in Python lists to NumPy ndarrays the run time for fit went from an average of 13 seconds to an average of
-.09 seconds. This comes to .00692% of its initial run time. 
+.09 seconds. This comes to .00692% of its initial run time. After implementing support for SciPy's sparse matrices, NumPy's ndarray run time remains
+unchanged at around .09 seconds. When running the same dataset but converted to a sparse matrix instead of a NumPy array the run time went from an 
+average of .09 seconds to about .15 seconds. I believe that this is largely due to the fact that the dataset tested on is not very sparse, but the 
+efficiency hit is worth the space efficiency regardless. I expect that if run on an actually sparse dataset the run time would be comparable or even
+superior. When working with the dataset discussed below, our feature matrix in NumPy took about 49 Gigabytes of storage (unusable on any local 
+machine available to me) while the sparse matrix took only .067 Gigabytes. This is simply due to the extreme sparseness of our feature vector but is 
+still a good indicator of how valuable having sparse support is.
 
 <h2>Dataset</h2>
 The dataset I used is the UCI_Drug (https://www.kaggle.com/datasets/arpikr/uci-drug/data) dataset found on Kaggle. In short, 
